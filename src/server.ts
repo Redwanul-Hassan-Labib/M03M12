@@ -48,15 +48,39 @@ const initBD = async()=>{
         
 }
 
-initBD();
+// initBD();
+
+
 
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello Redwanul Hassan Labib!");
 });
 
-app.post("/", (req: Request, res: Response) => {
-  console.log(req.body);
+app.post("/users", async(req: Request, res: Response) => {
+    const {name, email, age, address, phone} = req.body;
+
+    try {
+        const result = await pool.query(`INSERT INTO users(name, email, age, address, phone) VALUES($1, $2, $3, $4, $5) RETURNING *`, 
+            [name, email, age, address, phone]
+        )
+
+        // console.log(result)
+
+        // res.send({message:"data sending"})
+
+         res.status(201).json({
+            Succuss: false,
+            message : "data insert",
+            data : result.rows[0]
+        })
+        
+    } catch (err: any) {
+        res.status(500).json({
+            Succuss: false,
+            message : err.message
+        })
+    }
 
   res.status(201).json({
     Succuss : true,
