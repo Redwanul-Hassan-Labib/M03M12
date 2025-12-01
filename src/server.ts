@@ -87,6 +87,9 @@ app.post("/users", async(req: Request, res: Response) =>{
 //     Message : "api is working"
 //   })
 });
+
+
+//! all page get 
 app.get("/users", async(req: Request, res: Response)=>{
     try {
         const result = await pool.query(`SELECT * FROM users`);
@@ -104,6 +107,67 @@ app.get("/users", async(req: Request, res: Response)=>{
         })
     }
 })
+
+
+//! single page get
+app.get("/users/:id", async(req: Request, res: Response)=>{
+    try {
+        const result = await pool.query(`SELECT * FROM users WHERE id = $1`, [req.params.id]);
+
+        if (result.rows.length === 0) {
+            res.status(500).json({
+            Succuss: false,
+            message : "data is not nai",
+            
+        })
+        }else{
+            res.status(200).json({
+            Succuss: false,
+            message : "User face successfully",
+            data : result.rows
+        })
+        }
+        
+    } catch (err:any) {
+        res.status(500).json({
+            Succuss: false,
+            message : err.message,
+            detailes: err
+        })
+    }
+})
+
+//! data put
+
+app.put("/users/:id", async(req: Request, res: Response)=>{
+    const {name, email, age, address, phone} = req.body;
+    try {
+        const result = await pool.query(`UPDATE users SET name=$1, email=$2, age=$3, address=$4, phone=$5 WHERE id=$6   RETURNING *` , [name, email, age, address, phone, req.params.id]);
+
+        if (result.rows.length === 0) {
+            res.status(500).json({
+            Succuss: false,
+            message : "data is not nai",
+            
+        })
+        }else{
+            res.status(200).json({
+            Succuss: false,
+            message : "User updated successfully",
+            data : result.rows[0],
+        })
+        }
+        
+    } catch (err:any) {
+        res.status(500).json({
+            Succuss: false,
+            message : err.message,
+            detailes: err
+        })
+    }
+})
+
+
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
