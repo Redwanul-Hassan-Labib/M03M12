@@ -48,16 +48,16 @@ const initBD = async()=>{
         
 }
 
-// initBD();
+initBD();
 
 
 
 
-app.get("/", (req: Request, res: Response) => {
+app.get("/", (req: Request, res: Response) =>{
   res.send("Hello Redwanul Hassan Labib!");
 });
 
-app.post("/users", async(req: Request, res: Response) => {
+app.post("/users", async(req: Request, res: Response) =>{
     const {name, email, age, address, phone} = req.body;
 
     try {
@@ -82,11 +82,28 @@ app.post("/users", async(req: Request, res: Response) => {
         })
     }
 
-  res.status(201).json({
-    Succuss : true,
-    Message : "api is working"
-  })
+//   res.status(201).json({
+//     Succuss : true,
+//     Message : "api is working"
+//   })
 });
+app.get("/users", async(req: Request, res: Response)=>{
+    try {
+        const result = await pool.query(`SELECT * FROM users`);
+        res.status(200).json({
+            Succuss: false,
+            message : "User face successfully",
+            data : result.rows
+        })
+        
+    } catch (err:any) {
+        res.status(500).json({
+            Succuss: false,
+            message : err.message,
+            detailes: err
+        })
+    }
+})
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
